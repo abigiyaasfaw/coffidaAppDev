@@ -130,13 +130,15 @@ const styles = StyleSheet.create({
 })
 
 function viewUserReviews({navigation}){
-
+//main function
+//navigation prop set so other screens can navigate to this one
   const nav = useNavigation();
   const [userReviews,setUserReviews] = React.useState([]);
   const [loaded,setLoaded] = React.useState(false);
+  //declare and set state variables
   const ItemSeparatorView = () => {
     return (
-      // FlatList Item Separator
+      //returns a view between each FlatList item
       <View
           style={{
             height: '0.1%',
@@ -150,19 +152,20 @@ function viewUserReviews({navigation}){
 
 
   useFocusEffect(
+    //runs when screen comes into focus
     React.useCallback(() => {
     const loadData = async () =>{
 
       const token = await AsyncStorage.getItem(TOKEN);
       const locid = await AsyncStorage.getItem(LOCID);
       const userid = await AsyncStorage.getItem(USERID);
+      //get values needed for api calls from AsyncStorage
 
-    //  console.log(id + " id")
       var str_token = String(token);
 
 
       if(token != null){
-
+        //execute if token is not null (when the user is logged in)
           const userRevReq = {
             method:'GET',
             headers:{ 'Content-Type': 'application/json','X-Authorization': String(token),
@@ -170,16 +173,21 @@ function viewUserReviews({navigation}){
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': 0
+            //force no cache to be stored
           }
 
 
           }
 
             fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userid)  , userRevReq)
+            //execute get request to get user's info
             .then((response) => response.json())
             .then((responseJson)=>{
               setUserReviews(responseJson.reviews);
+              //get user's reviews and set to state array
+              //this array will be used to fill the FlatList with data
               setLoaded(true)
+              //load FlatList
 
 
 
@@ -187,7 +195,7 @@ function viewUserReviews({navigation}){
             })
             .catch((error) => {
               console.log(String(error))
-            //  alert("unable to fetch data")
+            //catch error
 
 
 
@@ -199,6 +207,9 @@ function viewUserReviews({navigation}){
       else{
         alert("sign in")
         setLoaded(false)
+        //if token's null => user hasnt signed in
+        //alert user to sign in
+        //dont load flatlist
 
       }
 //
@@ -209,23 +220,14 @@ function viewUserReviews({navigation}){
     loadData();
 
 
-  },[loaded,setUserReviews])
+  },[loaded])
+  //reload FlatList if loaded value changes
 );
 
-const viewReviews = async() =>{
-  const currLocID = await AsyncStorage.getItem(LOCID);
-  console.log(userReviews)
-  console.log(currLocID + " lool")
-  //AsyncStorage.setItem(LOCID,)
-  if(currLocID !== null){
-    AsyncStorage.setItem(LOCID,String(currLocID));
-    console.log(currLocID + " lool")
-    nav.navigate('View Reviews');
-  }
 
-
-}
 const viewReview = (currLocID,revLocID,price,qual,clean,overall,desc) =>{
+  //function executed when user presses on review (a FlatList item)
+  //reviews details passed as arguments
   AsyncStorage.setItem(REVLOCID,String(currLocID));
   AsyncStorage.setItem(CUR_REV,String(revLocID));
   AsyncStorage.setItem(PRICE,String(price));
@@ -233,18 +235,15 @@ const viewReview = (currLocID,revLocID,price,qual,clean,overall,desc) =>{
   AsyncStorage.setItem(CLEAN,String(clean));
   AsyncStorage.setItem(OVERALL,String(overall));
   AsyncStorage.setItem(DESC,String(desc));
-  console.log(price + qual + clean + overall + desc + " params");
-  console.log(userReviews[0]);
+  //save review's details to AsyncStorage
+  //so they can be accessed and used in the next screen
+
 
   nav.navigate("Update Review")
+  //navigate to screen to update review
 }
 
-const favLoc = async() =>{
 
-}
-const unFavLoc = async() =>{
-
-}
 
 
 

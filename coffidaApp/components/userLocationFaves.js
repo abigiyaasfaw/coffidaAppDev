@@ -25,6 +25,7 @@ const CLEAN = '@save_clean';
 const OVERALL = '@save_overall';
 const DESC = '@save_desc';
 const REVLOCID = '@save_curr_loc_id';
+//variables to load and set values from and to AsyncStorage
 
 const styles = StyleSheet.create({
   textInputStyle:{
@@ -107,12 +108,14 @@ const styles = StyleSheet.create({
 function userLocationFaves(props){
 
   const nav = useNavigation();
+  //hook used for navigation
   const [userFavedLocs,setUserFavedLocs] = React.useState([]);
   const [loaded,setLoaded] = React.useState(false);
   const [refresh,setRefresh] = React.useState(false);
+  //set state variables & and an array to store data and populate flatlist
   const ItemSeparatorView = () => {
     return (
-      // FlatList Item Separator
+      //returns a view between each item
       <View
           style={{
               height: 0.5,
@@ -125,11 +128,14 @@ function userLocationFaves(props){
 
 
   useFocusEffect(
+    //load when screen comes into focus
     React.useCallback(() => {
     const loadData = async () =>{
 
       const token = await AsyncStorage.getItem(TOKEN);
       const userid = await AsyncStorage.getItem(USERID);
+      //load variables from storage
+      //needed to make api calls
 
 
 
@@ -143,16 +149,20 @@ function userLocationFaves(props){
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': 0
+            //force no cache to be stored
           }
 
 
           }
 
             fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userid)  , userLocReq)
+            //get request to retrieve user's info
             .then((response) => response.json())
             .then((responseJson)=>{
               setUserFavedLocs(responseJson.favourite_locations);
+              //set array to store user's favourite location
               setLoaded(true)
+              //load flatlist
 
 
 
@@ -172,17 +182,20 @@ function userLocationFaves(props){
       else{
         alert("sign in")
         setLoaded(false)
+        //warn user
+        //dont load FlatList
 
       }
 //
     }
     //eof
 
-    //console.log(locReviews.location_id + " data source");
+
     loadData();
 
 
   },[refresh])
+  //reload useFocusEffect when value of refresh changes
 );
 
 
@@ -190,6 +203,7 @@ function userLocationFaves(props){
 
 
 const unFaveLocation = async(location_id) =>{
+  //method to un favourite a location
   const token = await AsyncStorage.getItem(TOKEN);
   const locid = location_id;
   const userid = await AsyncStorage.getItem(USERID);
@@ -202,21 +216,21 @@ const unFaveLocation = async(location_id) =>{
 
   }
    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(locid) + '/favourite', unFaveLocReq)
+   //request to unfavourite a location
+   //requires location id
     .then((response) => {
       if(response.ok){
         setRefresh(!refresh);
 
+        //if successful change value of refresh to reload flatlist
 
       }
-    })
-    .then((responseJson)=>{
-
-
-
     })
     .catch((error) => {
       console.log(String(error))
       alert("unable to unlike review")
+      //catch error
+      //notify user that there's an error
 
 
     })

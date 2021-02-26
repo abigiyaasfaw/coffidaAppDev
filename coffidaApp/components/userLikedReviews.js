@@ -110,9 +110,10 @@ function userLikedReviews(props){
   const [userLikedReviews,setUserLikedReviews] = React.useState([]);
   const [loaded,setLoaded] = React.useState(false);
   const [refresh,setRefresh] = React.useState(false);
+  //declare state variables
   const ItemSeparatorView = () => {
     return (
-      // FlatList Item Separator
+      //returns view between each flatlist item
       <View
           style={{
               height: 0.5,
@@ -125,34 +126,43 @@ function userLikedReviews(props){
 
 
  useFocusEffect(
+   //loades when screen is on focus
     React.useCallback(() => {
     const loadData = async () =>{
 
       const token = await AsyncStorage.getItem(TOKEN);
       const userid = await AsyncStorage.getItem(USERID);
+      //get token and user id from storage
 
 
 
 
       if(token != null){
-
+        //if block executed if user is logged in
+        //token only evaluates to null if no one is logged in
           const userRevReq = {
             method:'GET',
+            //get method headers
             headers:{ 'Content-Type': 'application/json','X-Authorization': String(token),
 
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': 0
+            //forces no cache to be stored
+            //gets rid of 304 and no data being returned
           }
 
 
           }
 
             fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userid)  , userRevReq)
+            //make get request
             .then((response) => response.json())
             .then((responseJson)=>{
               setUserLikedReviews(responseJson.liked_reviews);
               setLoaded(true)
+              //set user's liked reviews to a state array
+              //load
 
 
 
@@ -172,6 +182,8 @@ function userLikedReviews(props){
       else{
         alert("sign in")
         setLoaded(false)
+        //loaded set to false
+        //notify user to sign in
 
       }
 //
@@ -183,6 +195,7 @@ function userLikedReviews(props){
 
 
   },[refresh])
+  //reload when refresh variable is changed
 )
 
 
@@ -190,10 +203,15 @@ function userLikedReviews(props){
 
 
 const unlikeReview = async(review_id,location_id) =>{
+  //method to unlike review
+  //review and location id as args
+  //to make a delete request
   const token = await AsyncStorage.getItem(TOKEN);
   const locid = location_id;
   const userid = await AsyncStorage.getItem(USERID);
   const revID = review_id;
+  //load token and user id from storage
+
   const unlikeReviewReq = {
     method:'DELETE',
     headers:{ 'Content-Type': 'application/json','X-Authorization': String(token)},
@@ -202,21 +220,21 @@ const unlikeReview = async(review_id,location_id) =>{
 
   }
    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(locid) + '/review/' + String(revID) + '/like', unlikeReviewReq)
+   //delete request
     .then((response) => {
       if(response.ok){
         setRefresh(!refresh);
+        //if successful change value of refresh
+        //so flatlist is reloaded
 
 
       }
     })
-    .then((responseJson)=>{
 
-
-
-    })
     .catch((error) => {
       console.log(String(error))
       alert("unable to unlike review")
+      //notify user if request unsuccesful
 
 
     })

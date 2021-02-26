@@ -13,7 +13,8 @@ const STORE_FN = '@save_firstname'
 const STORE_LN = '@save_lastname'
 const STORE_EMAIL = '@save_email'
 const STORE_PASS = '@save_password'
-var error_Str= "";
+//variables used to access and set values in AsyncStorage
+let error_Str= "";
 
 
 const  styles = StyleSheet.create({
@@ -74,184 +75,21 @@ const  styles = StyleSheet.create({
   }
 });
 
-//https://10.0.2.2:3333/api/1.0.0/user
-//10.0.2.2:3333
-//switch to /user
-//https://virtserver.swaggerhub.com/zedrem/CoffiDa/1.0.0
-function SaveUserData(firstName,lastName,email,password, boolX){
-  console.log("reached #1");
-
-   console.log("reached?")
-   try{
-
-      AsyncStorage.setItem(STORE_EMAIL,email)
-      AsyncStorage.setItem(STORE_PASS,password)
-     console.log('Data saved!!')
-   }catch(e){
-
-     alert('Failed to save data :(')
-   }
 
 
 
 
-};
-
-function getUserData(){
-
-}
-function navToLogIn(props){
-  //const navigation = useNavigation();
-
-
-
-
-
-}
-
-
-function buttonPress(firstName,lastName,email,password)  {
-
-
-  let validUser = false;
-  var emailRegex = /\S+@\S+\.\S+/;
-  var noEmptyFields = false;
-  var validEmail = false;
-  var validPass = false;
-  const fN_str = String(firstName);
-  const lN_str = String(lastName);
-  const email_str = String(email);
-  const pass_str = String(password);
-  var count = 0;
-  var error_string = "";
-  var usrParams = [fN_str,lN_str,email_str,pass_str];
-  for(var i=0;i<usrParams.length;i++){
-    if(usrParams[i].length === 0){
-      count += 1;
-      //check if any of the fields are empty and increment count
-    }
-  }
-  console.log(count +  " countttt");
-
-  if(count > 0){
-    //if count is more than 0, that means at least one of the fields are EMPTY
-
-    noEmptyFields = false;
-    //cant pass this unless fields are filled
-  }
-  else{
-    noEmptyFields = true;
-    //check if email format is valid using regex
-    if(emailRegex.test(email_str) == true){
-      validEmail = true;
-      //check length of PASSWORD
-      if(pass_str.length <= 5){
-        validPass = false;
-
-
-      }
-      else{
-        validPass = true;
-      }
-    }
-    else{
-      validEmail = false;
-
-    }
-
-
-  }
-  if(validEmail == false && validPass == false && noEmptyFields == false){
-    alert("make sure the email is in a valid format and your password is longer than 5 characters and that"
-    + "you have filled all the fields")
-
-  }
-  if(validEmail == true && validPass == false && noEmptyFields == true) {
-    alert("password has to be longer than three characters!")
-  }
-  if(validEmail == false && validPass == true && noEmptyFields == true) {
-    alert("make sure the email is in the right format")
-  }
-  if(validEmail == false && validPass == false && noEmptyFields == true) {
-    alert("invalid email format and password should be longer than 5 characters")
-  }
+// function navToLogIn(props){
+//   //const navigation = useNavigation();
+//
+//
+//
+//
+//
+// }
 
 
 
-  // console.log(firstName)
-  // console.log(lastName)
-  // console.log(email)
-  // console.log(password)
-  //const [userAdded, getUserAdded] = React.useState(false);
-  var errorExists = false;
-  var userExists = false;
-  if(validEmail == true && validPass == true && noEmptyFields == true){
-
-    var userDeets = {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      password: password
-    }
-    const postReq = {
-      method:'POST',
-      headers:{ 'Content-Type': 'application/json'},
-      body: JSON.stringify(userDeets)
-      //'first_name='+ firstName + '&last_name=' + lastName + '&email='+ email + '&password='+ password
-    }
-
-
-    fetch('http://10.0.2.2:3333/api/1.0.0/user', postReq)
-      .then((response) => {
-        console.log(response + " response");
-        if(response.ok){
-          navToLogIn();
-          return response.JSON();
-
-
-        }
-        else{
-          alert("email may already exist. please try with a different email")
-          throw new Error("oppps");
-        }
-      })
-      .then((responseJson) => {
-
-        console.log(responseJson);
-        return responseJson;
-
-
-
-      })
-      .then(data => console.log(data.id))
-      .catch((error) => {
-        console.log(String(error))
-          //validUser = false
-          //alert("email may already exist. please try with a different email")
-      })
-      console.log(validUser + " valid user status")
-
-      if(validUser == true){
-          console.log(validUser + " valid user status in {}")
-
-      }
-      // fetch('http://10.0.2.2:3333/api/1.0.0/user/1')
-      //   .then((response) => response.json())
-      //   .catch((error) => {
-      //     console.log(error + " get error");
-      //   })
-
-
-
-
-  }
-
-
-
-
-
-
-}
 
 
 const postUser = (firstName,lastName,email,password) =>{
@@ -288,26 +126,27 @@ const addUser = (firstName,lastName,email,password) => {
 
 
   const signUp = async() =>{
-
-
-    var emailRegex = /\S+@\S+\.\S+/;
-    var noEmptyFields = false;
-    var validEmail = false;
-    var validPass = false;
+    //method executes when sign up button pressed
+    let emailRegex = /\S+@\S+\.\S+/;
+    //regex to validate email
+    let noEmptyFields = false;
+    let validEmail = false;
+    let validPass = false;
     const fN_str = String(firstName);
     const lN_str = String(lastName);
     const email_str = String(email);
     const pass_str = String(password);
-    var count = 0;
-    var error_string = "";
-    var usrParams = [fN_str,lN_str,email_str,pass_str];
-    for(var i=0;i<usrParams.length;i++){
+    //convert text input values to string
+    let count = 0;
+    let error_string = "";
+    let usrParams = [fN_str,lN_str,email_str,pass_str];
+    for(let i=0;i<usrParams.length;i++){
       if(usrParams[i].length === 0){
         count += 1;
         //check if any of the fields are empty and increment count
       }
     }
-    console.log(count +  " countttt");
+
 
     if(count > 0){
       //if count is more than 0, that means at least one of the fields are EMPTY
@@ -320,18 +159,23 @@ const addUser = (firstName,lastName,email,password) => {
       //check if email format is valid using regex
       if(emailRegex.test(email_str) == true){
         validEmail = true;
-        //check length of PASSWORD
+
         if(pass_str.length <= 5){
+          //check length of PASSWORD
+          //if password length is < 5
           validPass = false;
+          //set bool to false
 
 
         }
         else{
           validPass = true;
+          //set to true if password > 5
         }
       }
       else{
         validEmail = false;
+        //set to false if email is invalid
 
       }
 
@@ -340,57 +184,68 @@ const addUser = (firstName,lastName,email,password) => {
     if(validEmail == false && validPass == false && noEmptyFields == false){
       alert("make sure the email is in a valid format and your password is longer than 5 characters and that"
       + "you have filled all the fields")
+      //if all fields are empty, notify user
 
     }
     if(validEmail == true && validPass == false && noEmptyFields == true) {
       alert("password has to be longer than three characters!")
+      //if password is invalid, notify user
     }
     if(validEmail == false && validPass == true && noEmptyFields == true) {
       alert("make sure the email is in the right format")
+      //if email is invalid, notify user
     }
     if(validEmail == false && validPass == false && noEmptyFields == true) {
       alert("invalid email format and password should be longer than 5 characters")
+      //if only email and password are invalid, notify user
     }
 
 
 
-    // console.log(firstName)
-    // console.log(lastName)
-    // console.log(email)
-    // console.log(password)
-    //const [userAdded, getUserAdded] = React.useState(false);
-    var errorExists = false;
-    var userExists = false;
-    if(validEmail == true && validPass == true && noEmptyFields == true){
 
-      var userDeets = {
+    let errorExists = false;
+    let userExists = false;
+    if(validEmail == true && validPass == true && noEmptyFields == true){
+      //checks to see if email and password are valid AND there's no empty fields
+
+
+      let userDeets = {
         first_name: firstName,
         last_name: lastName,
         email: email,
         password: password
       }
+      //create object array of user's details
       const postReq = {
         method:'POST',
         headers:{ 'Content-Type': 'application/json'},
         body: JSON.stringify(userDeets)
-        //'first_name='+ firstName + '&last_name=' + lastName + '&email='+ email + '&password='+ password
+        //convert object array to json string
+        //since content type is json
+        //headers and body prepared before post request
+
+
       }
 
 
       fetch('http://10.0.2.2:3333/api/1.0.0/user', postReq)
+      //execute post request
         .then((response) => {
           if(response.ok){
-            console.log(response + " response");
+            //check to see if response is successful
 
             try{
 
 
                 navigation.navigate('Log in');
+                //go to log in screen
+               alert('User signed up!!')
+               //notify user that they've signed up
 
-               alert('Data saved!!')
 
              }catch(e){
-               alert('Failed to save data :(')
+               alert('Failed to sign up user :(')
+               //notify user of error
              }
 
 
@@ -398,30 +253,30 @@ const addUser = (firstName,lastName,email,password) => {
 
           }
           else{
-            alert("email may already exist. please try with a different email")
+            if(response.status == 500){
+              alert("server error")
+            }
+            else{
+              alert("email may already exist. please try with a different email")
+              //since all fields are checked and server error checked, if request isnt successful
+              //the only error is if the email already exists
+              //notify user
+            }
+
           }
         })
-        .then((responseJson) => {
-
-          console.log(responseJson);
-          return responseJson;
-
-
-
-        })
-
         .catch((error) => {
           console.log(String(error))
-          alert("email may already exist. please try with a different email")
+
 
         })
 
 
 
-        setFirstName('');
-        setLastName('');
-        setEmail('');
-        setPassword('');
+        // setFirstName('');
+        // setLastName('');
+        // setEmail('');
+        // setPassword('');
 
 
 
@@ -434,22 +289,8 @@ const addUser = (firstName,lastName,email,password) => {
 
 
   return (
-    // const saveData = async () =>{
-    //   console.log("reached?")
-    //   try{
-    //     await AsyncStorage.setItem(STORE_FN,firstName)
-    //     await AsyncStorage.setItem(STORE_LN,lastName)
-    //     await AsyncStorage.setItem(STORE_EMAIL,email)
-    //     await AsyncStorage.setItem(STORE_PASS,password)
-    //     alert('Data saved!!')
-    //   }catch(e){
-    //     alert('Failed to save data :(')
-    //   }
-    // }
 
 
-  // <ScrollView contentContainerStyle={styles.contentContainer}
-  //   >
     <KeyboardAwareScrollView  style={styles.keyboardView} >
     <View style={styles.viewStyle}>
     <Text style = {styles.labelStyle}>Enter your first name: </Text>
@@ -489,7 +330,7 @@ const addUser = (firstName,lastName,email,password) => {
   </TouchableOpacity>
   </View>
   </KeyboardAwareScrollView>
-  // </ScrollView>
+
 
   );
 

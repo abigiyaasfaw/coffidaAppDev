@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
 })
 
 function Locations({navigation}){
+  //state variables declared
   const [locationName,setLocationName] = React.useState("");
   const nav = useNavigation();
 
@@ -106,25 +107,30 @@ useEffect(()=>{
   const loadLocName = async() =>{
     const currLocName = await AsyncStorage.getItem(LOCNAME);
     const currLocTown = await AsyncStorage.getItem(LOCTOWN);
+    //get location name and town from storage
+
     var concatLocName = String(currLocName) + ', ' +  String(currLocTown)
     setLocationName(String(concatLocName));
+    //displays the location name and town so user knows what location they've clicked
   }
   loadLocName();
 
 },[])
 const viewReviews = async() =>{
   const currLocID = await AsyncStorage.getItem(LOCID);
-  console.log(currLocID + " lool")
-  //AsyncStorage.setItem(LOCID,)
+    //get location id of current location
+    //which was set before this screen
   if(currLocID !== null){
 
     nav.navigate('View Reviews');
+    //navigate to view reviews about this location
   }
 
 
 }
 const addReview = async() =>{
   nav.navigate("Add Review")
+  //navigate to screen where you can add a review
 }
 
 

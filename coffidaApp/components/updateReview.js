@@ -21,6 +21,7 @@ const CLEAN = '@save_clean';
 const OVERALL = '@save_overall';
 const DESC = '@save_desc';
 const REVLOCID = '@save_curr_loc_id';
+const PROFANITY = '@save_filter';
 import * as ImagePicker from 'react-native-image-picker';
 
 const  styles = StyleSheet.create({
@@ -193,6 +194,9 @@ function updateReview(props){
       const overallCurrRev = await AsyncStorage.getItem(OVERALL);
       const descCurrRev = await AsyncStorage.getItem(DESC);
       const token = await AsyncStorage.getItem(TOKEN);
+      //get current review's details from storage
+      //get user's token to make an api call
+      //these were set before the navigation to this page
       const str_token = String(token);
 
       console.log(priceCurrRev + " price")
@@ -201,58 +205,13 @@ function updateReview(props){
       setAvgQual(String(qualCurrRev));
       setAvgClen(String(cleanCurrRev));
       setDesc(String(descCurrRev))
-      console.log(revLocId + " rev loc id");
-      console.log(revID + " rev id");
       setOverallSl(Number(overallCurrRev));
       setPriceSl(Number(priceCurrRev));
       setQualitySl(Number(qualCurrRev));
       setCleanSl(Number(cleanCurrRev));
-      const checkPhotoExistsReq = {
-        method:'GET',
-        headers:{ 'Accept': 'image/png','X-Authorization': str_token},
+      //set the state variables to the values from storage
+      //this fills the text inputs and number sliders with the review's current details when the screen is loaded
 
-
-
-
-      }
-        fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(revLocId) + '/review/' + String(revID) + '/photo', checkPhotoExistsReq)
-        .then((response) => {
-          console.log(response)
-          if(response.status == 404 ){
-            //setLiked(false);
-            setPhotoChosen(!photoChosen);
-            setPhotoRequest(!photoRequest);
-            setPhotoUri("");
-            setAlreadyHadPhoto(!alreadyHadPhoto)
-
-          }
-          if(response.status == 200 || response.status == 304){
-            console.log(response.url + " URLLL")
-            //./storage/photos/2.png
-            setPhotoUri(response.url);
-            setPhotoChosen(!photoChosen);
-            setPhotoRequest(!photoRequest);
-            setAlreadyHadPhoto(!alreadyHadPhoto)
-
-            console.log( photoUri + ' photo uri???//')
-
-
-
-          }
-        })
-        .then((image)=>{
-          console.log(image!=null + " lool")
-
-
-        })
-        .catch((error) => {
-          console.log(String(error))
-          alert("ERROR!!")
-          setPhotoChosen(false);
-          setPhotoRequest(false);
-
-
-        })
 
 
 
@@ -263,79 +222,94 @@ function updateReview(props){
   },[])
 
   const setPriceSlider = (value) =>{
-    console.log(value + "avg price");
+    //method to get value that user selects for price and sets a state variable to value
     setPriceSl(value);
     setAvgPrice(value);
   }
   const setQualitySlider = (value) =>{
-    console.log(value + "avg qual");
+    //method to get value that user selects for quality and sets a state variable to value
     setQualitySl(value);
     setAvgQual(value);
   }
   const setCleanSlider = (value) =>{
-    console.log(value + "avg cleanliness");
+  //method to get value that user selects for clean and sets a state variable to value
     setCleanSl(value);
     setAvgClen(value);
   }
   const setOverallSlider = (value) =>{
-    console.log(value + "avg overall");
+  //method to get value that user selects for overall and sets a state variable to value
     setOverallSl(value);
     setAvgOverall(value);
   }
   const deleteReview = async() =>{
+    //method to delete a review
     const revLocId = await AsyncStorage.getItem(REVLOCID);
     const revID = await AsyncStorage.getItem(CUR_REV);
     const token = await AsyncStorage.getItem(TOKEN);
     const str_token = String(token);
+    //load variables needed to delete a review from storage
 
 
 
-    var reviewDeets ={
-      overall_rating: Number(avgOverall),
-      price_rating: Number(avgPrice),
-      quality_rating: Number(avgQual),
-      clenliness_rating: Number(avgClen),
-      review_body:String(desc)
-    }
+    // var reviewDeets ={
+    //   overall_rating: Number(avgOverall),
+    //   price_rating: Number(avgPrice),
+    //   quality_rating: Number(avgQual),
+    //   clenliness_rating: Number(avgClen),
+    //   review_body:String(desc)
+    // }
+    // //object array created to
 
     const reviewReq = {
       method:'DELETE',
       headers:{ 'Content-Type': 'application/json','X-Authorization': str_token},
+      //headers needed to make a delete request
 
 
 
     }
      fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(revLocId) + '/review/' + String(revID) , reviewReq)
+     //make a delete request for this review
       .then((response) => {
         if(response.ok){
           alert("deleted review!")
-
+          //if request is successful, alert user
           setGoBack(true);
           nav.goBack();
+          //navigate back to the previous screen
         }
       })
-      .then((responseJson)=>{
-
-
-
-      })
+      
       .catch((error) => {
         console.log(String(error))
         alert("unable to delete review")
         setGoBack(false);
+        //notify user if review cant be deleted
 
 
       })
 
   }
   const updateReviewFunc = async() =>{
+    //method to update review
+    //method invoked when update review button is pressed
     const revLocId = await AsyncStorage.getItem(REVLOCID);
     const revID = await AsyncStorage.getItem(CUR_REV);
     const token = await AsyncStorage.getItem(TOKEN);
     const str_token = String(token);
-    console.log(avgQual + avgClen + avgClen + avgPrice + avgOverall + desc);
-    console.log(typeof avgQual)
+    //retrieve relevant values to pass to the fetch url
+    const profFilter = await AsyncStorage.getItem(PROFANITY);
+    //retrieve value of whether has switched on profanity filter or not
+
+
     if(desc.length !== 0){
+      //check description is not null
+      let containsProf = desc.includes("cake")||desc.includes("cakes")||desc.includes("pastry")||desc.includes("pastries")||desc.includes("tea")||desc.includes("teas");
+      //check to see if description contains any 'profanity'
+     if(String(profFilter) == "true" && containsProf == false || String(profFilter) == "false" && (containsProf == true || containsProf == false)){
+       //check if profanity filter is on and check to see if desc includes profanity
+       //evaulates to true if profFilter is on but desc has no profanity
+       //or if profFilter is off but either the desc contains profanity or not
     var reviewDeets ={
       overall_rating: Number(avgOverall),
       price_rating: Number(avgPrice),
@@ -343,48 +317,55 @@ function updateReview(props){
       clenliness_rating: Number(avgClen),
       review_body:String(desc)
     }
+    //create object array of the review details
 
     const reviewReq = {
       method:'PATCH',
       headers:{ 'Content-Type': 'application/json','X-Authorization': str_token},
       body:JSON.stringify(reviewDeets)
+      //convert object array to json string
 
 
     }
      fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(revLocId) + '/review/' + String(revID) , reviewReq)
+     //make patch request to update review
       .then((response) => {
         if(response.ok){
           alert("updated review!")
-
+          //if request is successful, notify user
             nav.goBack();
+            //return to previous screen
 
 
 
 
         }
       })
-      .then((responseJson)=>{
 
-
-
-      })
       .catch((error) => {
         console.log(String(error))
         alert("unable to add review")
         setGoBack(false);
+        //notify user of error if review cant be updated
 
 
       })
 
 
+}
+else{
+  alert("profanity filter is on so make sure you dont add reviews about cakes, tea or pastries!")
+  //if desc contains any profanity and filter is on, notify user
+}
 
 }
 else{
   alert("fill out description please!!")
+  //notify user that description is empty
 }
 
 
-    //nav.navigate("Update Review")
+
   }
 
 

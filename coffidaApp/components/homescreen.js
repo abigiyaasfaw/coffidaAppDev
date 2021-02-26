@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 
 
 function HomeScreen(props){
-
+  //set states
   const [locData, setLocData] = useState([])
   const [loaded, setLoaded] = useState(true);
   const [error, setError] = useState(null);
@@ -110,10 +110,10 @@ function HomeScreen(props){
   const[faveStatus,setFaveStatus] = React.useState(false);
 
 
-
+//method returns view that appears between each flatlist item
   const ItemSeparatorView = () => {
     return (
-      // FlatList Item Separator
+
       <View
           style={{
               height: '0.1%',
@@ -125,16 +125,18 @@ function HomeScreen(props){
     );
   };
 
-
+//load locations when user is on page, the flatlist is filled
 useFocusEffect(
   React.useCallback(()=>{
     const getLocations = async () =>{
+      //load user id, token and location id to access data from fetch
       const token = await AsyncStorage.getItem(TOKEN);
       const id = await AsyncStorage.getItem(USERID);
       const curr_loc_id = await AsyncStorage.getItem(LOCID);
 
-      var str_token = String(token);
+      let str_token = String(token);
       if(token != null){
+        //execute get request if token is not null
         const postReq = {
           method:'GET',
           headers:{ 'Content-Type': 'application/json','X-Authorization': str_token}
@@ -144,6 +146,7 @@ useFocusEffect(
          fetch('http://10.0.2.2:3333/api/1.0.0/find', postReq)
           .then((response) => response.json())
           .then((responseJson)=>{
+            //set response to array to fill the flatlist
             setLocData(responseJson)
             setLoaded(true)
 
@@ -156,6 +159,7 @@ useFocusEffect(
 
           })
           // .finally(()=>setLoaded(false));
+          //get request to get user's favourite locations
           const locReq = {
             method:'GET',
             headers:{ 'Content-Type': 'application/json','X-Authorization': String(token),
@@ -163,6 +167,8 @@ useFocusEffect(
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': 0
+            //response status 304 kept getting returned
+            //these directives make sure that the data isnt stored in a cache
           }
 
 
@@ -172,14 +178,14 @@ useFocusEffect(
           .then((responseJson)=>{
             //console.log(responseJson.favourite_locations)
             setUserLocFav(responseJson.favourite_locations);
-
+            //get user's fave locations and add to array
 
 
 
           })
           .catch((error) => {
             console.log(String(error))
-          //  alert("unable to fetch data")
+
 
 
 
@@ -201,9 +207,9 @@ useFocusEffect(
 
 
   },[faveStatus,loaded])
+  //reload useFocusEffect if these variables change
 )
 
-  //var getLocData = locData;
 
 
 
@@ -211,14 +217,18 @@ useFocusEffect(
 
 
 
-//  const tokenSaved =  AsyncStorage.getItem(TOKEN);
+
+
 
 
 
 const unFavLoc = async(locID) =>{
+  //method to undavourite a location
+  //location id passed to access it's info from the api
   const token = await AsyncStorage.getItem(TOKEN);
   const str_token = String(token);
   console.log("un fav")
+  //delete request headers
   const unFavReq = {
     method:'DELETE',
     headers:{ 'Content-Type': 'application/json','X-Authorization': str_token},
@@ -226,10 +236,14 @@ const unFavLoc = async(locID) =>{
 
 
   }
+  //delete request fetch url
    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(locID) + '/favourite'  , unFavReq)
     .then((response) => {
       if(response.ok){
         setFaveStatus(!faveStatus)
+        //fave status's value changed
+        //reloads the use useFocusEffect
+        //and refills the flatlist with updated data
       }
     })
     .then((responseJson)=>{
@@ -247,9 +261,13 @@ const unFavLoc = async(locID) =>{
 }
 
 const favLoc = async(locID) =>{
+  //method to favourite a location
+
   console.log(" fave")
   const token = await AsyncStorage.getItem(TOKEN);
+  //load user token to use in fetch header
   const str_token = String(token);
+  //post headers
   const favReq = {
     method:'POST',
     headers:{ 'Content-Type': 'application/json','X-Authorization': str_token},
@@ -258,9 +276,12 @@ const favLoc = async(locID) =>{
 
   }
    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(locID) + '/favourite'  , favReq)
+   //fetch url to favourite a location
     .then((response) => {
       if(response.ok){
         setFaveStatus(!faveStatus)
+        //if successful change value of faveStatus so that the flatlist can be
+        //repopulated with the updated data
       }
     })
     .then((responseJson)=>{
@@ -324,7 +345,7 @@ const favLoc = async(locID) =>{
              onPress = {() => favLoc(item.location_id)}
              >
              <Text style = {styles.faveButton}>Fave</Text>
-             </TouchableOpacity>
+             </TouchableOpacity> 
 
 
            }

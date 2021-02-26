@@ -11,7 +11,7 @@ const STORE_PASS = '@save_password';
 const TOKEN = '@save_token';
 const USERID = '@save_id';
 const LOCID = '@save_locid';
-
+const PROFANITY = '@save_filter';
 
 
 const  styles = StyleSheet.create({
@@ -228,8 +228,11 @@ function addReview(props){
     const token = await AsyncStorage.getItem(TOKEN);
     const str_token = String(token);
     const str_locid = String(locid)
+    const profFilter = await AsyncStorage.getItem(PROFANITY);
 
     if(desc.length !== 0){
+      var containsProf = desc.includes("cake")||desc.includes("cakes")||desc.includes("pastry")||desc.includes("pastries")||desc.includes("tea")||desc.includes("teas");
+      if(String(profFilter) == "true" && containsProf == false || String(profFilter) == "false" && (containsProf == true || containsProf == false)){
     var reviewDeets ={
       overall_rating: avgOverall,
       price_rating: avgPrice,
@@ -297,7 +300,10 @@ function addReview(props){
 
       }
 
-
+}
+else{
+  alert("profanity filter is on! you can't add anything about teas or pastries or cakes!! behave")
+}
 }
 else{
   alert("fill out description please!!")

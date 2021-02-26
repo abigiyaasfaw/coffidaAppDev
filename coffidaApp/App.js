@@ -5,6 +5,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useEffect} from 'react';
+
 import SignUp from './components/userSignUp';
 import HomeScreen from './components/homescreen';
 import addReview from './components/addReview';
@@ -17,7 +18,7 @@ import updateUser from './components/settings';
 
 import userLikedReviews from './components/userLikedReviews';
 import userLocationFaves from './components/userLocationFaves';
-
+//load screens to be used in drawer navigator and stack navigator
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 

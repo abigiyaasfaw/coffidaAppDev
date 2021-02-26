@@ -15,6 +15,7 @@ const USERID = '@save_id';
 const LOGGED = '@save_loggedStatus';
 const LOCID = '@save_locid'
 const PROFANITY = '@save_filter';
+//variables to set/get items using async storage
 
 
 const  styles = StyleSheet.create({
@@ -86,21 +87,7 @@ const  styles = StyleSheet.create({
 });
 
 
-//   const AsyncAlert = (title, msg) => new Promise((resolve) => {
-//   Alert.alert(
-//     title,
-//     msg,
-//     [
-//       {
-//         text: 'ok',
-//         onPress: () => {
-//           resolve('YES');
-//         },
-//       },
-//     ],
-//     { cancelable: false },
-//   );
-// });
+
 
 
 
@@ -122,21 +109,25 @@ const  styles = StyleSheet.create({
   const [profFilter, setProfFilter] = React.useState(false);
   const [loaded,setLoaded] = React.useState(false)
   useFocusEffect(
+    //when screen is focused
   React.useCallback(()=>{
     const getCurrUserDetails = async() =>{
       const userID = await AsyncStorage.getItem(USERID);
       const token = await AsyncStorage.getItem(TOKEN);
       const userPass = await AsyncStorage.getItem(STORE_PASS)
+      //load saved relevant variables from async storage
       const userReq = {
         method:'GET',
         headers:{ 'Content-Type': 'application/json', 'X-Authorization': String(token)},
 
 
       }
+      //get request to retrieve the user's information
       fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userID), userReq)
         .then((response) => {
           if(response.ok){
-
+            //if response is okay
+            //load view
 
             return response.json();
             setLoaded(true)
@@ -147,6 +138,7 @@ const  styles = StyleSheet.create({
             alert("YOU NEED TO LOGIN")
             setLoaded(false);
 
+
           }
         })
         .then((responseJson) => {
@@ -156,7 +148,10 @@ const  styles = StyleSheet.create({
           setLastName(responseJson.last_name);
           setEmail(responseJson.email);
           setPassword(String(userPass));
-          console.log(userPass)
+
+          //get user's details
+          //set it to state variables
+
 
 
 
@@ -166,6 +161,8 @@ const  styles = StyleSheet.create({
           console.log(String(error))
           alert("YOU NEED TO LOGIN TO VIEW SETTINGS DUH??")
           setLoaded(false);
+          //warn user
+          //dont load view
 
         })
 
@@ -176,67 +173,80 @@ const  styles = StyleSheet.create({
     getCurrUserDetails();
 
   },[loaded])
+  //loaded => dependency variable
+  //if loaded changes, useFocusEffect runs again
 )
 
 
-const profanitySetting = () =>{
-  console.log(profFilter + " begin")
-  if(profFilter == false){
-    console.log("setting to true")
-    setProfFilter(profFilter => !profFilter)
-
-  }
-  else if(profFilter == true ){
-    console.log("setting to false")
-    setProfFilter(profFilter => !profFilter)
-    console.log(profFilter + " t")
-  }
-  console.log(profFilter + " after")
-
-}
+// const profanitySetting = () =>{
+//   //method exec
+//
+//   if(profFilter == false){
+//     console.log("setting to true")
+//     setProfFilter(profFilter => !profFilter)
+//
+//   }
+//   else if(profFilter == true ){
+//     console.log("setting to false")
+//     setProfFilter(profFilter => !profFilter)
+//     console.log(profFilter + " t")
+//   }
+//
+//
+// }
 
 const updateUser = async() =>{
+  //method executed when update button is pressed
   var emailRegex = /\S+@\S+\.\S+/;
+  //regex used to validate email
 
   if(firstName != null && lastName != null && email != null && password != null){
+    //run if block if none of the fields are empty
     if(emailRegex.test(String(email)) == true && password.length > 5){
+      //check if email is valid AND the password is > 5
     const userID = await AsyncStorage.getItem(USERID);
     const token = await AsyncStorage.getItem(TOKEN)
+    //load variables needed to make a request
     var userDeets ={
       first_name : String(firstName),
       last_name : String(lastName),
       email: String(email),
       password: String(password)
     }
+    //create user array to use in fetch body
 
     const userUpdateReq = {
       method:'PATCH',
       headers:{ 'Content-Type': 'application/json','X-Authorization': String(token)},
       body:JSON.stringify(userDeets)
+      //convert onject to json string
 
 
     }
      fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userID) , userUpdateReq)
+     //make patch request to update user
       .then((response) => {
         if(response.ok){
           AsyncStorage.setItem(FNAME,String(firstName));
           AsyncStorage.setItem(LNAME,String(lastName));
           AsyncStorage.setItem(STORE_EMAIL,String(email));
           AsyncStorage.setItem(STORE_PASS,String(password));
-
+          //if patch request successful, store user details in storage
 
           alert("updated user")
 
-
+          //notify user
           nav.goBack();
+          //go back to the previous screen
         }
         else{
-
+          alert("unable to update user")
+          //notify user if error occurs
         }
         return response.json()
       })
       .then((responseJson)=>{
-        console.log(responseJson)
+
 
 
       })
@@ -244,6 +254,8 @@ const updateUser = async() =>{
         console.log(error + " e")
         if(String(error).includes("\"Bad\"")){
           alert("Email already in use")
+          //check if error is 'Bad Request'
+          //notify user that the email has been taken
         }
 
 
@@ -252,11 +264,13 @@ const updateUser = async() =>{
     }
     else{
       alert("please make sure the email format is valid and your password is longer than 5 characters");
+      //if email and password are wrongly entered, notify user
     }
   }
 
   else{
     alert("Make sure no fields are empty!!")
+    //alert user that the description cant be empty
   }
 }
 
