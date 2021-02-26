@@ -52,8 +52,24 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems:'center',
+    justifyContent:'center',
     //justifyContent:'space-around',
-    backgroundColor:'#cd853f'
+    backgroundColor:'#fff'
+  },
+  buttonText:{
+    color:'#fff',
+    fontSize:20,
+    fontWeight:'bold',
+    textAlign:'center',
+    backgroundColor:'#d27535',
+    borderRadius:10
+
+  },
+  dataLayout:{
+    flex:1,
+    height:'100%',
+    width:'100%',
+    backgroundColor:'#d27535'
   },
   signUpBtn:{
     backgroundColor:"#ffefd5",
@@ -66,12 +82,7 @@ const styles = StyleSheet.create({
     flex:1
   },
 
-  buttonText:{
-    color:'#000000',
-    fontSize:20,
-    fontWeight:'bold',
-    textAlign:'center'
-  },
+
   labelStyle:{
     color:'#ffffff',
     fontWeight:'bold',
@@ -79,24 +90,38 @@ const styles = StyleSheet.create({
     marginTop:'5%'
   },
   btnStyle:{
-    backgroundColor:"#ffefd5",
-    borderRadius:10,
-    height:'100%',
-    width:'100%',
-    marginTop:'5%',
-    marginLeft:'5%',
-    flex:1
+    width:'70%',
+    marginLeft:'15%',
+    borderColor: '#000',
+    borderRadius:5,
   },
 
   buttonText:{
-    color:'#000000',
+    color:'#fff',
     fontSize:20,
     fontWeight:'bold',
-    textAlign:'center'
+    textAlign:'center',
+    backgroundColor:'#d27535'
+
   },
   dataText:{
     fontSize:20,
     marginTop:'5%'
+  },
+  locationBtnStyle:{
+    width:'100%',
+    justifyContent:'center',
+    borderColor: '#000',
+    borderRadius:5,
+
+
+  },
+  container:{
+    justifyContent: 'center',
+    backgroundColor:'#fff',
+    height:'100%',
+    width:'100%',
+    justifyContent:'center'
   }
 
 
@@ -114,9 +139,10 @@ function viewUserReviews({navigation}){
       // FlatList Item Separator
       <View
           style={{
-              height: 0.5,
-              width: '100%',
-              backgroundColor: '#C8C8C8'
+            height: '0.1%',
+            width: '100%',
+            marginTop:'10%',
+            backgroundColor: '#fff'
           }}
       />
     );
@@ -237,28 +263,15 @@ const unFavLoc = async() =>{
         <TouchableOpacity style={styles.btnStyle} onPress={()=>viewReview(String(item.location.location_id),String(item.review.review_id),String(item.review.price_rating),String(item.review.quality_rating),String(item.review.clenliness_rating),
           String(item.review.overall_rating),String(item.review.review_body))}>
 
-         <View style={styles.container}>
-         <Text style={styles.dataText}>LOC ID: {item.location.location_id}</Text>
-          <Text style={styles.dataText}>REV ID ID: {item.review.review_id}</Text>
-          {item.review.photo_path != null?
-
-            <Image
-            source={{
-                  uri:  String(item.review.photo_path),
-                }}
-                style={{ width: 100, height: 100 }}
-              />
-              :
-              null
+         <View style={styles.dataLayout}>
 
 
-          }
-         <Text style={styles.dataText}>Likes: {item.review.likes}</Text>
-         <Text style={styles.dataText}>Overall rating: {item.review.overall_rating}</Text>
-         <Text style={styles.dataText}>Overall price: {item.review.price_rating}</Text>
-         <Text style={styles.dataText}>Quality rating: {item.review.quality_rating}</Text>
-         <Text style={styles.dataText}>Cleanliness: {item.review.clenliness_rating}</Text>
-         <Text style={styles.dataText}>Review: {item.review.review_body}</Text>
+         <Text style={styles.buttonText}>Likes: {item.review.likes}</Text>
+         <Text style={styles.buttonText}>Overall rating: {item.review.overall_rating}</Text>
+         <Text style={styles.buttonText}>Overall price: {item.review.price_rating}</Text>
+         <Text style={styles.buttonText}>Quality rating: {item.review.quality_rating}</Text>
+         <Text style={styles.buttonText}>Cleanliness: {item.review.clenliness_rating}</Text>
+         <Text style={styles.buttonText}>Review: {item.review.review_body}</Text>
          </View>
         </TouchableOpacity>
 

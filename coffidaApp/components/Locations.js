@@ -15,7 +15,9 @@ const STORE_EMAIL = '@save_email'
 const STORE_PASS = '@save_password'
 const USERID = '@save_id';
 const LOGGED = '@save_loggedStatus';
-const LOCID = '@save_locid'
+const LOCID = '@save_locid';
+const LOCNAME = '@save_locname';
+const LOCTOWN = '@save_loctown';
 
 
 const styles = StyleSheet.create({
@@ -95,15 +97,27 @@ const styles = StyleSheet.create({
 })
 
 function Locations({navigation}){
-
+  const [locationName,setLocationName] = React.useState("");
   const nav = useNavigation();
 
+
+
+useEffect(()=>{
+  const loadLocName = async() =>{
+    const currLocName = await AsyncStorage.getItem(LOCNAME);
+    const currLocTown = await AsyncStorage.getItem(LOCTOWN);
+    var concatLocName = String(currLocName) + ', ' +  String(currLocTown)
+    setLocationName(String(concatLocName));
+  }
+  loadLocName();
+
+},[])
 const viewReviews = async() =>{
   const currLocID = await AsyncStorage.getItem(LOCID);
   console.log(currLocID + " lool")
   //AsyncStorage.setItem(LOCID,)
   if(currLocID !== null){
-  
+
     nav.navigate('View Reviews');
   }
 
@@ -112,18 +126,13 @@ const viewReviews = async() =>{
 const addReview = async() =>{
   nav.navigate("Add Review")
 }
-const favLoc = async() =>{
 
-}
-const unFavLoc = async() =>{
-
-}
 
 
 
   return(
     <View style={styles.viewStyle}>
-    <Text style ={styles.buttonText}>LOCATION:</Text>
+    <Text style ={styles.buttonText}>LOCATION: {locationName}</Text>
     <TouchableOpacity
     style={styles.btnStyle}
 
@@ -138,20 +147,7 @@ const unFavLoc = async() =>{
     >
     <Text style = {styles.buttonText}>View Reviews</Text>
     </TouchableOpacity>
-    <TouchableOpacity
-    style={styles.btnStyle}
 
-    onPress = {() => favLoc()}
-    >
-    <Text style = {styles.buttonText}>Fave location</Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-    style={styles.btnStyle}
-
-    onPress = {() => unFavLoc()}
-    >
-    <Text style = {styles.buttonText}>Unfave location</Text>
-    </TouchableOpacity>
     </View>
 
   )

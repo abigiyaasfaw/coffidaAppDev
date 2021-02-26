@@ -182,7 +182,7 @@ function userLocationFaves(props){
     loadData();
 
 
-  },[loaded,refresh])
+  },[refresh])
 );
 
 
@@ -204,7 +204,7 @@ const unFaveLocation = async(location_id) =>{
    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(locid) + '/favourite', unFaveLocReq)
     .then((response) => {
       if(response.ok){
-        setRefresh(true);
+        setRefresh(!refresh);
 
 
       }
@@ -236,7 +236,7 @@ const unFaveLocation = async(location_id) =>{
         data={userFavedLocs}
         ItemSeparatorComponent={ItemSeparatorView}
         renderItem={({item,index})=>(
-    
+
 
 
          <View style={styles.container}>

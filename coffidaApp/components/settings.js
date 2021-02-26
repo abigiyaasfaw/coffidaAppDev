@@ -4,6 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import {useEffect} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect } from '@react-navigation/native'
 
 const STORE_EMAIL = '@save_email';
 const STORE_PASS = '@save_password';
@@ -49,7 +50,8 @@ const  styles = StyleSheet.create({
     width:'70%',
     marginTop:'5%',
     justifyContent:'center',
-    flex:1
+    flex:1,
+    marginBottom:'4%'
   },
 
   buttonText:{
@@ -70,15 +72,15 @@ const  styles = StyleSheet.create({
     width:'100%',
     backgroundColor:'#cd853f'
   },
-  showText:{
-    fontWeight:'bold',
-    fontSize:20,
-    justifyContent:'center',
-    marginTop: '10%'
-  },
-  hideText:{
-    display:'none'
+  switchView:{
+    backgroundColor:'#cd853f',
+    width:'100%',
+    height:'100%',
+    flexDirection:'row',
+    flex:2,
+    justifyContent:'center'
   }
+
 });
 
 
@@ -116,7 +118,9 @@ const  styles = StyleSheet.create({
   const [email,setEmail] = React.useState('');
   const [password,setPassword] = React.useState('');
   const [profFilter, setProfFilter] = React.useState(false);
-  useEffect(()=>{
+  const [loaded,setLoaded] = React.useState(false)
+  useFocusEffect(
+  React.useCallback(()=>{
     const getCurrUserDetails = async() =>{
       const userID = await AsyncStorage.getItem(USERID);
       const token = await AsyncStorage.getItem(TOKEN);
@@ -133,12 +137,14 @@ const  styles = StyleSheet.create({
 
 
             return response.json();
-
+            setLoaded(true)
 
 
           }
           else{
             alert("YOU NEED TO LOGIN")
+            setLoaded(false);
+
           }
         })
         .then((responseJson) => {
@@ -157,6 +163,7 @@ const  styles = StyleSheet.create({
         .catch((error) => {
           console.log(String(error))
           alert("YOU NEED TO LOGIN TO VIEW SETTINGS DUH??")
+          setLoaded(false);
 
         })
 
@@ -166,7 +173,8 @@ const  styles = StyleSheet.create({
     }
     getCurrUserDetails();
 
-  },[])
+  },[loaded])
+)
 
 
 const profanitySetting = () =>{
@@ -254,7 +262,13 @@ const updateUser = async() =>{
 
 
     <KeyboardAwareScrollView  style={styles.keyboardView} >
+  {loaded?
     <View style={styles.viewStyle}>
+    <Text style={styles.buttonText}>LOGIN</Text>
+    </View>
+    :
+    <View style={styles.viewStyle}>
+
     <Text style = {styles.labelStyle}>First Name: </Text>
     <TextInput
       label="First Name:"
@@ -295,6 +309,9 @@ const updateUser = async() =>{
 
 
     </TouchableOpacity>
+    <Text style={styles.buttonText}>PROFANITY FILTER</Text>
+    <View style={styles.switchView}>
+    <Text style={styles.buttonText}>OFF</Text>
     <Switch
         trackColor={{ true: "#000", false: "#fff" }}
         thumbColor={profFilter ? "#fff" : "#000"}
@@ -305,10 +322,13 @@ const updateUser = async() =>{
         }}
         value={profFilter}
       />
+      <Text style={styles.buttonText}>ON</Text>
+      </View>
 
 
 
   </View>
+}
   </KeyboardAwareScrollView>
   )
 }

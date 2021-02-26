@@ -124,8 +124,8 @@ function userLikedReviews(props){
   };
 
 
-  useFocusEffect(
-    React.useCallback(() => {
+
+    useEffect(() => {
     const loadData = async () =>{
 
       const token = await AsyncStorage.getItem(TOKEN);
@@ -183,7 +183,7 @@ function userLikedReviews(props){
 
 
   },[refresh])
-);
+
 
 
 
@@ -238,7 +238,7 @@ const unlikeReview = async(review_id,location_id) =>{
         renderItem={({item,index})=>(
 
 
-   
+
          <View style={styles.container}>
          <Text style={styles.dataText}>LOC ID: {item.location.location_id}</Text>
           <Text style={styles.dataText}>REV ID ID: {item.review.review_id}</Text>

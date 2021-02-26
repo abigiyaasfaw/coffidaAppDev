@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import {Component} from 'react';
 import {useState,useEffect} from "react";
+import { useFocusEffect } from '@react-navigation/native'
 import { View, Text, StyleSheet,Button,FlatList,SafeAreaView,TouchableOpacity} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -13,15 +14,16 @@ const lastId = '@save_locid';
 const TOKEN = '@save_token';
 const USERID = '@save_id';
 const LOCID = '@save_locid';
+const LOCNAME = '@save_locname';
+const LOCTOWN = '@save_loctown';
 
 const styles = StyleSheet.create({
   container:{
     justifyContent: 'center',
-    flex: 1,
-    marginLeft: 10,
-    marginRight: 10,
-    marginBottom: 10,
-    marginTop: 30,
+    backgroundColor:'#fff',
+    height:'100%',
+    width:'100%',
+    justifyContent:'center'
   },
   item:{
     padding: 10,
@@ -39,11 +41,14 @@ const styles = StyleSheet.create({
   },
 
   buttonText:{
-    color:'#000000',
+    color:'#fff',
     fontSize:20,
     fontWeight:'bold',
     textAlign:'center',
-    marginTop:'5%'
+    marginTop:'5%',
+    backgroundColor:'#d27535',
+    borderRadius:10
+
   },
   dataLayout:{
     flex:1,
@@ -54,22 +59,40 @@ const styles = StyleSheet.create({
   dataText:{
     fontSize:10,
     marginLeft:'10%'
+  },
+  faveButton:{
+    color:'#f9e00a',
+    backgroundColor:'#000',
+    width:'20%',
+    padding:0,
+    marginLeft:'5%',
+    textAlign:'center',
+    marginTop:'1%',
+    marginBottom:'1%',
+    fontWeight:'bold'
+  },
+  unFaveButton:{
+    color:'#000',
+    backgroundColor:'#f9e00a',
+    width:'30%',
+    padding:0,
+    marginLeft:'5%',
+    textAlign:'center',
+    marginTop:'1%',
+    marginBottom:'1%',
+    fontWeight:'bold'
+  },
+  locationBtnStyle:{
+    width:'50%',
+    marginLeft:'20%',
+    borderColor: '#000',
+    borderRadius:5
+
+
   }
 });
 
-// const renderRow = ({item}) => {
-//   return (
-//
-//     <ListItem>
-//       <Text style={{color:'red'}}> {item.name}</Text>
-//       </ListItem>
-//       )
-//
-// };
 
-// const onRefresh = () => {
-//   setUserData([])
-// }
 
 
 
@@ -93,17 +116,18 @@ function HomeScreen(props){
       // FlatList Item Separator
       <View
           style={{
-              height: 0.5,
+              height: '0.1%',
               width: '100%',
-              backgroundColor: '#C8C8C8'
+              marginTop:'10%',
+              backgroundColor: '#fff'
           }}
       />
     );
   };
 
 
-
-  useEffect(()=>{
+useFocusEffect(
+  React.useCallback(()=>{
     const getLocations = async () =>{
       const token = await AsyncStorage.getItem(TOKEN);
       const id = await AsyncStorage.getItem(USERID);
@@ -176,7 +200,8 @@ function HomeScreen(props){
     console.log(userLocFav);
 
 
-  },[faveStatus])
+  },[faveStatus,loaded])
+)
 
   //var getLocData = locData;
 
@@ -270,32 +295,35 @@ const favLoc = async(locID) =>{
            <View style={styles.dataLayout}>
 
            <TouchableOpacity
-           style={styles.btnStyle}
+           style={styles.locationBtnStyle}
 
            onPress = {() => {
              AsyncStorage.setItem(LOCID,String(item.location_id))
+             AsyncStorage.setItem(LOCNAME,String(item.location_name))
+             AsyncStorage.setItem(LOCTOWN,String(item.location_town))
+
              nav.navigate("Locations")
 
 
            }}
            >
-           <Text style = {styles.buttonText}>Name: {item.location_name} Town: {item.location_town}</Text>
+           <Text style = {styles.buttonText}>{item.location_name}, {item.location_town}</Text>
            </TouchableOpacity>
            {userLocFav.some(x=>x.location_id == item.location_id)?
              <TouchableOpacity
-             style={styles.btnStyle}
+             style={styles.locationBtnStyle}
 
              onPress = {() => unFavLoc(item.location_id)}
              >
-             <Text style = {styles.buttonText}>Un Fave</Text>
+             <Text style = {styles.unFaveButton}>Un Fave</Text>
              </TouchableOpacity>
              :
              <TouchableOpacity
-             style={styles.btnStyle}
+             style={styles.locationBtnStyle}
 
              onPress = {() => favLoc(item.location_id)}
              >
-             <Text style = {styles.buttonText}>Fave</Text>
+             <Text style = {styles.faveButton}>Fave</Text>
              </TouchableOpacity>
 
 

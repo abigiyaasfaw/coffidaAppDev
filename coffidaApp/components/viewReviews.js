@@ -23,7 +23,7 @@ const PROFANITY = '@save_filter';
 
 const styles = StyleSheet.create({
   container:{
-    justifyContent: 'center', 
+    justifyContent: 'center',
     flex: 1,
     height:'100%',
     width:'100%',
@@ -165,6 +165,7 @@ useEffect(()=>{
           !review.review_body.includes("tea")||!review.review_body.includes("tea")||!review.review_body.includes("tea"))
           console.log(safeRevs + " SAFEEE")
           setLocReviews(safeRevs);
+          setLocID(Number(locid))
 
           }
           else{
@@ -192,10 +193,41 @@ useEffect(()=>{
           var noProfanityArr = [];
           var safeRevs = locReviews.filter(review=>!review.review_body.includes("tea")||!review.review_body.includes("tea")||
         !review.review_body.includes("tea")||!review.review_body.includes("tea")||!review.review_body.includes("tea"))
-          console.log(safeRevs + " safe")
+          console.log(safeRevs.review_id + " safe")
           setLocReviews([]);
           setLocReviews(safeRevs)
           setLoaded(true)
+          const reviewReq = {
+            method:'GET',
+            headers:{ 'Content-Type': 'application/json','X-Authorization': String(token),
+
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': 0
+          }
+
+
+          }
+
+            fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userid)  , reviewReq)
+            .then((response) => response.json())
+            .then((responseJson)=>{
+              var safeRevsLiked = responseJson.liked_reviews.filter(review=>!review.review.review_body.includes("tea")||!review.review.review_body.includes("tea")||
+            !review.review.review_body.includes("tea")||!review.review.review_body.includes("tea")||!review.review.review_body.includes("tea"))
+              setUserLiked(safeRevsLiked);
+              console.log(safeRevsLiked[0].review.review_id + " liked")
+
+
+
+
+            })
+            .catch((error) => {
+              console.log(String(error))
+            //  alert("unable to fetch data")
+
+
+
+            })
 
 
           // console.log(safeReviews + " safe reviews")
@@ -206,36 +238,38 @@ useEffect(()=>{
           setProfanityStatus(false)
           console.log("FALSE")
           setLoaded(true)
+
+          const reviewReq = {
+            method:'GET',
+            headers:{ 'Content-Type': 'application/json','X-Authorization': String(token),
+
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': 0
+          }
+
+
+          }
+
+            fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userid)  , reviewReq)
+            .then((response) => response.json())
+            .then((responseJson)=>{
+
+              setUserLiked(responseJson.liked_reviews);
+
+
+
+
+            })
+            .catch((error) => {
+              console.log(String(error))
+            //  alert("unable to fetch data")
+
+
+
+            })
         }
-        const reviewReq = {
-          method:'GET',
-          headers:{ 'Content-Type': 'application/json','X-Authorization': String(token),
 
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': 0
-        }
-
-
-        }
-
-          fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userid)  , reviewReq)
-          .then((response) => response.json())
-          .then((responseJson)=>{
-
-            setUserLiked(responseJson.liked_reviews);
-
-
-
-
-          })
-          .catch((error) => {
-            console.log(String(error))
-          //  alert("unable to fetch data")
-
-
-
-          })
 
 
 
@@ -299,7 +333,7 @@ const unLike = async(item) =>{
        fetch('http://10.0.2.2:3333/api/1.0.0/location/' + str_loc_id + '/review/' + rev_str + '/like', unlikeReviewReq)
         .then((response) => {
           if(response.ok){
-            //setLiked(false);
+            setLiked(!liked);
 
 
           }
@@ -319,7 +353,7 @@ const unLike = async(item) =>{
         //console.log(liked + " liked?")
     }
     setUpdateList(!updateList);
-    setLiked(!liked);
+    //setLiked(!liked);
   }
 
 
@@ -350,7 +384,7 @@ const addLike = async(item) =>{
        fetch('http://10.0.2.2:3333/api/1.0.0/location/' + str_loc_id + '/review/' + rev_str + '/like', likeReviewReq)
         .then((response) => {
           if(response.ok){
-              //setLiked(true);
+              setLiked(!liked);
 
 
           }
@@ -370,7 +404,7 @@ const addLike = async(item) =>{
         //console.log(liked + " liked")
     }
     setUpdateList(!updateList);
-    setLiked(!liked)
+    //setLiked(!liked)
 
 
 
