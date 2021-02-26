@@ -186,36 +186,7 @@ function checkData(username,password){
   };
 
 
-  const reset = async() =>{
-    const postReq = {
-      method:'POST',
-      headers:{ 'Content-Type': 'application/json'}
 
-
-    }
-    fetch('http://10.0.2.2:3333/api/1.0.0/resample', postReq)
-      .then((response) => {
-        if(response.ok){
-          console.log(response + " response");
-
-
-
-
-
-
-
-        }
-        else{
-          alert("l")
-        }
-      })
-
-      .catch((error) => {
-        console.log(String(error))
-        alert("")
-
-      })
-  }
   const logOut = async() =>{
 
 
@@ -225,24 +196,21 @@ function checkData(username,password){
     const emAS = await AsyncStorage.getItem(STORE_EMAIL)
     const passAS = await AsyncStorage.getItem(STORE_PASS)
 
-    // .then((users) => {
-    //   const addNewUser = users ? JSON.parse(users) : [];
-    //   addNewUser.push(newUser);
-    //   AsyncStorage.setItem('users', JSON.stringify(addNewUser));
-    // });
+
     if(tokenAS == null){
       AsyncStorage.setItem(USERID,"");
       AsyncStorage.setItem(TOKEN,"");
       AsyncStorage.setItem(STORE_EMAIL,"");
       AsyncStorage.setItem(STORE_PASS,"");
       AsyncStorage.setItem(LOGGED,"");
+      alert("you need to first sign in to be able to log out")
       navigation.navigate('Home');
 
     }
     else{
       var stringID = String(idAS);
       var stringToken = String(tokenAS);
-      console.log(stringID + " strrr")
+
 
       const postReq = {
         method:'POST',
@@ -348,7 +316,7 @@ function checkData(username,password){
 
                 }
                 else{
-                  alert("USER DOESNT EXIST")
+                  alert("Enter email and password")
                 }
               })
               .then((responseJson) => {
@@ -374,6 +342,7 @@ function checkData(username,password){
                   AsyncStorage.setItem(USERID,String(data.id))
                   AsyncStorage.setItem(LOGGED,"true")
                   AsyncStorage.setItem(STORE_PASS,String(passStr))
+                  AsyncStorage.setItem(STORE_EMAIL,String(usernameStr))
                   navigation.navigate('Home');
 
                 }
@@ -396,8 +365,8 @@ function checkData(username,password){
 
           }
 
-          // setUserName('');
-          // setPassword('');
+          setUserName('');
+          setPassword('');
 
     }
 

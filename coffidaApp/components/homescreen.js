@@ -341,22 +341,6 @@ const favLoc = async(locID) =>{
 
     </SafeAreaView>
    )
-//     <View style={styles.container}>
-//       <Text>Test</Text>
-//       <FlatList
-//         data = {userData}
-//         keyExtractor = {item => item.first}
-//           renderItem={({item})=>(
-//             <View style={styles.listItem}>
-//               <Text>{'${item.name.first}
-//             }${
-//               item.name.last
-//             }'}</Text>
-//           )}
-//           />
-//       </View>
-//
-// );
 
 };
 export default HomeScreen;

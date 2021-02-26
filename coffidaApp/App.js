@@ -14,7 +14,7 @@ import viewReviews from './components/viewReviews';
 import viewUserReviews from './components/viewUserReviews';
 import updateReview from './components/updateReview';
 import updateUser from './components/settings';
-import likeUnlike from './components/likeUnlike';
+
 import userLikedReviews from './components/userLikedReviews';
 import userLocationFaves from './components/userLocationFaves';
 

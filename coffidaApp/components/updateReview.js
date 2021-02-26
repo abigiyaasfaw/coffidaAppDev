@@ -8,6 +8,7 @@ import SearchableDropdown from 'react-native-searchable-dropdown';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import {useState,useEffect} from "react";
+import { useFocusEffect } from '@react-navigation/native';
 const STORE_EMAIL = '@save_email';
 const STORE_PASS = '@save_password';
 const TOKEN = '@save_token';
@@ -56,8 +57,8 @@ const  styles = StyleSheet.create({
     borderRadius:20,
     height:'60%',
     width:'70%',
-    marginTop:'5%',
-    marginBottom:'10%',
+    marginTop:'2%',
+    marginBottom:'15%',
     justifyContent:'center',
     alignItems:'center',
     flex:1
@@ -114,6 +115,11 @@ const  styles = StyleSheet.create({
     backgroundColor:"#ffffff",
     color:"#000"
   },
+  delBtn:{
+    width:'70%',
+    marginTop:'1%'
+
+  },
   switchStyle:{
     transform:[{ scaleX: 1.0 }, { scaleY: 1.0 }]
   },
@@ -145,12 +151,12 @@ const  styles = StyleSheet.create({
 
   },
   imageStyle:{
-    width:'5%',
+    width:'20%',
     height:'5%'
   },
   imageView:{
     width:'50%',
-    height:'50%',
+    height:'10%',
     flex:1
   }
 })
@@ -173,7 +179,9 @@ function updateReview(props){
   const [photoChosen,setPhotoChosen] = React.useState(false)
   const[picData,setPicData] = React.useState([]);
   const[alreadyHadPhoto,setAlreadyHadPhoto] = React.useState(false);
+  const [res,setRes] = React.useState([]);
   const nav = useNavigation();
+
 
   useEffect(()=>{
     const getRevDetails = async() =>{
@@ -212,22 +220,23 @@ function updateReview(props){
           console.log(response)
           if(response.status == 404 ){
             //setLiked(false);
-            setPhotoChosen(false);
-            setPhotoRequest(false);
-            setPhotoUri(null);
-            setAlreadyHadPhoto(false)
+            setPhotoChosen(!photoChosen);
+            setPhotoRequest(!photoRequest);
+            setPhotoUri("");
+            setAlreadyHadPhoto(!alreadyHadPhoto)
 
           }
-          if(response.status == 200){
-            //console.log(response.uri + " j")
+          if(response.status == 200 || response.status == 304){
+            console.log(response.url + " URLLL")
             //./storage/photos/2.png
-            setPhotoChosen(true);
-            setPhotoRequest(true);
-            setAlreadyHadPhoto(true)
             setPhotoUri(response.url);
-            console.log( response + ' photo uri???//')
+            setPhotoChosen(!photoChosen);
+            setPhotoRequest(!photoRequest);
+            setAlreadyHadPhoto(!alreadyHadPhoto)
 
-            return response;
+            console.log( photoUri + ' photo uri???//')
+
+
 
           }
         })
@@ -252,6 +261,7 @@ function updateReview(props){
     getRevDetails();
 
   },[])
+
   const setPriceSlider = (value) =>{
     console.log(value + "avg price");
     setPriceSl(value);
@@ -345,9 +355,10 @@ function updateReview(props){
       .then((response) => {
         if(response.ok){
           alert("updated review!")
-          if(photoChosen != true){
+
             nav.goBack();
-          }
+
+
 
 
         }
@@ -364,48 +375,7 @@ function updateReview(props){
 
 
       })
-      console.log(photoUri + " photo uri")
-      if(photoChosen == true && photoUri.length != 0){
-        console.log(picData + " pic data")
-        const addPhotoReq = {
-          method:'POST',
-          headers:{ 'Accept':'*/*','Content-Type': 'image/jpeg','X-Authorization': str_token},
-          body:photoUri
 
-
-
-        }
-         fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(revLocId) + '/review/' + String(revID) + '/photo', addPhotoReq)
-          .then((response) => {
-            if(response.ok ){
-              console.log(response.uri + " res")
-              setGoBack(true);
-              nav.goBack();
-
-
-            }
-            else{
-              console.log(response + " res")
-            }
-
-          })
-          .then((responseJson)=>{
-
-
-
-          })
-          .catch((error) => {
-            console.log(String(error))
-            alert("ERROR!!")
-
-
-          })
-
-
-
-
-
-      }
 
 
 }
@@ -416,78 +386,7 @@ else{
 
     //nav.navigate("Update Review")
   }
-  const addPhoto = () =>{
-    ImagePicker.launchImageLibrary(
-        {
-          mediaType: 'photo',
-          includeBase64: true,
-          maxHeight: 500,
-          maxWidth: 500,
-        },
-        (response) => {
-          console.log(response.uri == null)
-          if(response.uri == null){
-            setPhotoChosen(false)
-            setPhotoRequest(false)
-            setPhotoUri(null)
-          }
-          else{
-          setPhotoUri(response.uri);
 
-
-          console.log(response.base64 + " base")
-          setPhotoChosen(true)
-          setPhotoRequest(true)
-
-        }
-        }
-      )
-  }
-  const deletePhoto = async() =>{
-    const revLocId = await AsyncStorage.getItem(REVLOCID);
-    const revID = await AsyncStorage.getItem(CUR_REV);
-    const token = await AsyncStorage.getItem(TOKEN);
-    const str_token = String(token);
-    if(alreadyHadPhoto == true){
-      const addPhotoReq = {
-        method:'DELETE',
-        headers:{ 'Accept':'*/*','Content-Type': 'image/jpeg','X-Authorization': str_token},
-
-
-
-
-      }
-       fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(revLocId) + '/review/' + String(revID) + '/photo', addPhotoReq)
-        .then((response) => {
-          if(response.ok ){
-            alert("photo deleted")
-
-            setPhotoChosen(false)
-            setPhotoRequest(false)
-
-          }
-
-
-        })
-        .then((responseJson)=>{
-
-
-
-        })
-        .catch((error) => {
-          console.log(String(error))
-          alert("ERROR!!")
-
-
-        })
-
-    }
-    else{
-      setPhotoChosen(false)
-      setPhotoRequest(false)
-    }
-
-  }
 
 return (
   <KeyboardAwareScrollView  style={styles.keyboardView} keyboardShouldPersistTaps={'handled'}>
@@ -542,48 +441,8 @@ return (
       style={styles.addDescStyle}
       maxLength={140}
     />
-    {photoChosen?
-
-      <Image
-      source={{
-            uri:  String(photoUri)
-          }}
-          style={styles.imageStyle}
-        />
-
-        :
-        null
 
 
-    }
-    {photoRequest?
-
-
-        <TouchableOpacity
-        style={styles.btnStyle}
-
-        onPress = {() => {
-          deletePhoto()
-
-        }}
-        >
-        <Text style = {styles.buttonText}>Delete photo</Text>
-        </TouchableOpacity>
-
-
-      :
-
-      <TouchableOpacity
-      style={styles.btnStyle}
-
-      onPress = {()=>
-        addPhoto()
-      }
-      >
-      <Text style = {styles.buttonText}>Add photo</Text>
-      </TouchableOpacity>
-
-    }
     <TouchableOpacity
     style={styles.btnStyle}
 

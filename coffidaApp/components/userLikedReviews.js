@@ -124,8 +124,8 @@ function userLikedReviews(props){
   };
 
 
-
-    useEffect(() => {
+ useFocusEffect(
+    React.useCallback(() => {
     const loadData = async () =>{
 
       const token = await AsyncStorage.getItem(TOKEN);
@@ -183,7 +183,7 @@ function userLikedReviews(props){
 
 
   },[refresh])
-
+)
 
 
 
@@ -204,7 +204,7 @@ const unlikeReview = async(review_id,location_id) =>{
    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + String(locid) + '/review/' + String(revID) + '/like', unlikeReviewReq)
     .then((response) => {
       if(response.ok){
-        setRefresh(true);
+        setRefresh(!refresh);
 
 
       }

@@ -287,10 +287,8 @@ const addUser = (firstName,lastName,email,password) => {
   const [dataId, setDataId] = React.useState(0);
 
 
-  const print = async() =>{
-    const state = await AsyncStorage.getItem('Users')
-    console.log(password);
-    //navigation.navigate('Log in');
+  const signUp = async() =>{
+
 
     var emailRegex = /\S+@\S+\.\S+/;
     var noEmptyFields = false;
@@ -386,12 +384,11 @@ const addUser = (firstName,lastName,email,password) => {
 
             try{
 
-                AsyncStorage.setItem(STORE_EMAIL,email)
-                AsyncStorage.setItem(STORE_PASS,password)
+
                 navigation.navigate('Log in');
 
                alert('Data saved!!')
-               return response.json();
+
              }catch(e){
                alert('Failed to save data :(')
              }
@@ -409,35 +406,10 @@ const addUser = (firstName,lastName,email,password) => {
           console.log(responseJson);
           return responseJson;
 
-  
+
 
         })
-        .then((data) => {
-          console.log(data.id)
-          setDataId(data.id);
-          var dataID = String(data.id);
-          var newUser = {
-            id: dataID,
-            fName: String(firstName),
-            lName: String(lastName),
-            email: String(email),
-            password: String(password)
-          }
-          try{
 
-            AsyncStorage.getItem('users')
-            .then((users) => {
-              const addNewUser = users ? JSON.parse(users) : [];
-              addNewUser.push(newUser);
-              AsyncStorage.setItem('users', JSON.stringify(addNewUser));
-            });
-
-
-          }catch{
-            console.log("noppppee")
-          }
-
-        })
         .catch((error) => {
           console.log(String(error))
           alert("email may already exist. please try with a different email")
@@ -511,7 +483,7 @@ const addUser = (firstName,lastName,email,password) => {
     />
     <TouchableOpacity
     style={styles.signUpBtn}
-    onPress = {() =>print()}
+    onPress = {() =>signUp()}
   >
     <Text style = {styles.buttonText}>Sign me up!</Text>
   </TouchableOpacity>
@@ -524,32 +496,6 @@ const addUser = (firstName,lastName,email,password) => {
 }
 
 
-// const readData = async() =>{
-//   try{
-//     const saved_fn = await AsyncStorage.getItem(STORE_FN)
-//     const saved_ln = await AsyncStorage.getItem(STORE_LN)
-//     const saved_email = await AsyncStorage.getItem(STORE_EMAIL)
-//     const saved_pass = await AsyncStorage.getItem(STORE_PASS)
-//
-//     if (saved_fn !== null){
-//       setFirstName(saved_fn)
-//     }
-//     if (saved_ln !== null){
-//       setLastName(saved_ln)
-//     }
-//     if (saved_email !== null){
-//       setEmail(saved_email)
-//     }
-//     if (saved_pass !== null){
-//       setPassword(saved_pass)
-//     }
-//   } catch(e){
-//     alert('Failed to fetch the data')
-//   }
-// }
-//
-// useEffect(()=>{
-//   readData()
-// },[])
+
 
 export default SignUp;

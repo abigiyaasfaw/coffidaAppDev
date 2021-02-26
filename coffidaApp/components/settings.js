@@ -8,6 +8,8 @@ import { useFocusEffect } from '@react-navigation/native'
 
 const STORE_EMAIL = '@save_email';
 const STORE_PASS = '@save_password';
+const FNAME = '@save_fn';
+const LNAME = '@save_ln';
 const TOKEN = '@save_token';
 const USERID = '@save_id';
 const LOGGED = '@save_loggedStatus';
@@ -217,6 +219,12 @@ const updateUser = async() =>{
      fetch('http://10.0.2.2:3333/api/1.0.0/user/' + String(userID) , userUpdateReq)
       .then((response) => {
         if(response.ok){
+          AsyncStorage.setItem(FNAME,String(firstName));
+          AsyncStorage.setItem(LNAME,String(lastName));
+          AsyncStorage.setItem(STORE_EMAIL,String(email));
+          AsyncStorage.setItem(STORE_PASS,String(password));
+
+
           alert("updated user")
 
 
