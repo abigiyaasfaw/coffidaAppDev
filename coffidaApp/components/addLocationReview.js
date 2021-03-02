@@ -13,7 +13,7 @@ LogBox.ignoreLogs([ 'VirtualizedLists should never be nested']);
 
 
 
-const API_KEY = "AIzaSyDvbG7UaIBmDTbm4nXVOLfMYcGB_PcoMc4";
+const API_KEY = "#########################";
 const STORE_EMAIL = '@save_email';
 const STORE_PASS = '@save_password';
 const TOKEN = '@save_token';
